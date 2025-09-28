@@ -8,15 +8,15 @@ pipeline {
     }
 
     environment {
-        SCANNER_HOME = tool 'sonar-scanner'
-        DOCKERHUB_USERNAME = 'kastrov'  // Set this directly to your Docker Hub username
+        SCANNER_HOME = tool 'sonar-scanner' //need in the sonar stage
+        DOCKERHUB_USERNAME = 'joe1911'  // Set this directly to your Docker Hub username
         DOCKER_IMAGE = "${DOCKERHUB_USERNAME}/spotify-app:latest"
     }
 
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/KastroVKiran/SonarQube-Project-Kastro.git'
+                git branch: 'main', url: 'https://github.com/Skyinhaler20932/sq-docker-jenkins.git'
             }
         }
 
@@ -35,7 +35,9 @@ pipeline {
         stage('Sonar Analysis') {
             steps {
                 withSonarQubeEnv('sonar-server') {
-                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Kastro -Dsonar.projectKey=KastroKey -Dsonar.java.binaries=target"
+			// Both the projectKey and projectName could be anything and it will appear on the SQ UI
+			// if you already created projevt you can use both their Name and Key
+                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName="spotify App" -Dsonar.projectKey="spotify" -Dsonar.java.binaries=target"
                 }
             }
         }
@@ -58,7 +60,7 @@ pipeline {
         stage('Docker Push to DockerHub') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                         echo "Docker Hub Username: ${DOCKERHUB_USERNAME}"  // Check the username
                         echo "Docker Image: ${DOCKER_IMAGE}"  // Check the image
                         sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
