@@ -52,6 +52,7 @@ pipeline {
             steps {
                 script {
                     // Building Docker Image
+		// Docker build is depricatded so either use buildx OR use sudo and add the jenkins user to the docker group
                     sh "docker build -t $DOCKER_IMAGE ."
                 }
             }
@@ -63,7 +64,11 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                         echo "Docker Hub Username: ${DOCKERHUB_USERNAME}"  // Check the username
                         echo "Docker Image: ${DOCKER_IMAGE}"  // Check the image
-                        sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+			// using the password in the cli is insecure so it's better to create an input here or use --password-stdin
+                        // sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+			 sh '''
+                        echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+			   '''
                         sh "docker push $DOCKER_IMAGE"
                     }
                 }
