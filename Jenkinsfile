@@ -37,7 +37,7 @@ pipeline {
                 withSonarQubeEnv('sonar-server') {
 			// Both the projectKey and projectName could be anything and it will appear on the SQ UI
 			// if you already created projevt you can use both their Name and Key
-                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName="spotify App" -Dsonar.projectKey="spotify" -Dsonar.java.binaries=target"
+                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName='spotify App' -Dsonar.projectKey='spotify' -Dsonar.java.binaries=target"
                 }
             }
         }
